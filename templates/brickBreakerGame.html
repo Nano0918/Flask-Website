@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+        canvas {
+            border: 1px solid; 
+            margin: 0 auto;
+            width: 800px;
+            height: 70vh;
+            display: block;
+            margin-top: 40px;
+            background-color: aquamarine;
+            z-index: -1;
+        }
+        
+        #btnSubmit {
+            border: 2px;
+            border-radius: 10px;
+            background-color:white;
+            color: black;
+            font-size: 50px;
+            font-weight: 500;
+            height: 60px;
+            width: 170px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        #btnSubmit:hover {
+            transition: 0.33s;
+            background-color: rgb(0, 216, 216);
+            color: rgb(255, 22, 148);
+        }
+        #settings{
+            background-color: aquamarine;
+            border: 1px solid; 
+            position:absolute;
+            width: 90vmin;
+            height: 73vmin;
+            margin-left: 27%;
+            margin-top: 40px;
+            font-size:65px;
+            font-weight: bold;
+            color: rgb(14, 3, 163);
+            text-align: center;
+            z-index: 1;
+        }
+    .radio {
+        width: 1.5em;
+        height: 1.5em;
+    }
+    #game {
+        margin: 0;
+        padding: 0;
+        margin-bottom: -49;
+    }
+    </style>
+<h1 id='siteheader' style="text-align:center; color:white; font-family: 'Montserrat', sans-serif;">Welcome to Orlando's Game Site</h1>
+
+    <nav style="background-color:black; font-size: 28px; font-family: 'Montserrat', sans-serif;" class="uk-navbar-container uk-margin;" uk-navbar="mode: click">
+        <div class="uk-navbar-left">
+            <ul class="uk-navbar-nav">
+                <li class="uk-active"><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/">Home</a></li>
+                <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Games</a>
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToe">TicTacToe</a></li>
+                            <li><a href="/SnakeGame">Snake Game</a></li>
+                            <li><a href="/BrickBreakerGame">Brick Breaker Game</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Tutorials</a>
+                        
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToeTutorial">Tic Tac Toe Tutorial</a></li>
+                            <li><a href="/SnakeTutorial">Snake Tutorial</a></li>
+                            <li><a href="/BrickBreakerTutorial">Brick Breaker Tutorial</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Leaderboards</a>
+                        
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToeLeaderboard">Tic Tac Toe Leaderboard</a></li>
+                            <li><a href="/SnakeLeaderboard">Snake Leaderboard</a></li>
+                            <li><a href="/BrickBreakerLeaderboard">Brick Breaker Leaderboard</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/AboutWebsite">About Website</a></li>
+            </ul>
+        </div>
+        <div class="uk-navbar-right">
+            <ul class="uk-navbar-nav">
+                {% if current_user.is_authenticated %}
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;">Hello, {{ name }}</a></li>
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/LogOut">Log Out</a></li>
+                {% else %}
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/SignUp">Sign Up</a></li>
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/LogIn">Log In</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    <div id='game-background'>
+        
+        <div id='settings'>
+            <form >
+                <h3 style='font-weight:bold; font-size:65px; color: black; z-index:-1;'>Brick Breaker<br>Difficulty</h3>
+                <input id = 'easy' type="radio" name = 'diff' value = 'Easy' class='radio' checked>
+                  <label for="easy">Easy</label><br>
+                <input id = 'normal' type="radio" name = 'diff' value = 'Normal' class='radio'>
+                  <label for="normal">Normal</label><br>      
+                <input id = 'hard' type="radio" name = 'diff'  value = 'Hard' class='radio'>
+                    <label for="hard">Hard</label><br>
+                <input id = 'btnSubmit' type="button" value = 'Start'>
+            </form>
+        </div>
+        <div id='game-board'></div>
+    </div>
+    <div id='blackscreen' style='width: 90vmin;height: 73vmin; margin-left: 27%;margin-top: 40px; position:absolute; background-color:black; z-index:-1;'>
+        <div style='width: 300px;
+                top: 300px;
+                background-color: orange;
+                position: absolute;
+                left: 33%;
+                text-align: center;
+                border-radius: 5px;
+                color: black;
+                font-weight: bold;
+                z-index: 1;
+                font-size: 2em;' class='endgame'>
+            <div class="text"></div>
+        </div>
+    </div>
+    
+    <form action="/UpdateBrickBreakerScore" method="POST">
+        <input style='opacity:0; z-index:-1;' type="number" value='{{ currentUserBrickBreakerScore.score }}'  id="demo" name="BrickBreakerFormScore">
+        <button style='position:absolute; z-index:-1; left: 46%; width:120px; height:30px; margin-top:35%;' id='newgame' type="submit">New Game</button>
+    </form>
+
+    <param type="number" value='{{ currentUserBrickBreakerScore.score }}' id="oldValue">
+    
+    <canvas id='gameCanvas' height='600px' width='800px'></canvas>
+    <script defer>
+       var canvas = document.getElementById('gameCanvas');
+       var ctx = canvas.getContext('2d');
+       var ballR = 10,  x = canvas.width / 2,  y = canvas.height - 30, 
+       dx=0,  dy=0,  pongH=15, pongW = 140, pongX=(canvas.width - pongW) / 2, 
+       rightKey=false,  leftKey=false,  brickRows=3;  brickCol = 9, brickW=75,
+       brickH=35,  brickPadding=10,  brickOffsetTop=Math.floor(Math.random() * 50 + 15),  
+       brickOffsetLeft=30, brickAmount = brickRows*brickCol, bricksHit = 0, pongDelta = 0;
+       let bricksHitTotal = 0
+       let bricksHitAtGameOver = 0
+       let difficulty;
+       let speed = 0
+       let restart = false
+       var bricks = [];
+       var brickGame = window.setInterval(draw, 30);
+
+
+       document.getElementById("btnSubmit").onclick = function(){
+            if (restart){
+                ballR = 10
+                x = canvas.width / 2
+                y = canvas.height - 30 
+                dx=0
+                dy=0
+                pongH=15
+                pongW = 140
+                pongX=(canvas.width - pongW) / 2
+                rightKey=false,  leftKey=false
+                brickRows=3
+                brickCol = 9
+                brickW=75
+                brickH=35
+                brickPadding=10
+                brickOffsetTop=Math.floor(Math.random() * 40 + 10) 
+                brickOffsetLeft=30
+                bricksHit = 0
+                speed = 0
+                bricks = []
+                pongDelta = 0
+                window.clearInterval(brickGame);
+                restart = false
+            }
+            difficulty = document.querySelector('input[name=diff]:checked').value;
+            document.getElementById("settings").style["z-index"] = "-1";
+            gameType()
+            makeBricksArray()
+            brickGame = window.setInterval(draw, 30);
+        }
+        
+        function myfunc() {
+            let old_value = document.getElementById('oldValue').value
+            let value = Number(old_value)
+            if (bricksHitAtGameOver > value)
+                document.getElementById('demo').value = bricksHitAtGameOver
+            else
+                document.getElementById('demo').value = value
+        }
+        
+        document.getElementById("newgame").onclick = function(){
+            myfunc()
+            document.getElementById("settings").style["z-index"] = "-1";
+            document.getElementById("newgame").style["z-index"] = "1";
+            document.getElementById("blackscreen").style["z-index"] = "1";
+            restart = true
+        }
+            
+    
+
+        function gameType() {
+            if (difficulty === "Easy"){
+                brickRows = 3
+                brickCol = 9
+                
+            }
+            else if (difficulty === "Normal"){
+                brickRows = 6
+                brickCol = 9
+                brickH = 25
+            }
+            else if (difficulty === "Hard"){
+                brickRows = 8
+                brickCol = 9
+                brickH = 20
+            }
+        }
+
+
+
+        function setBallSpeed() {
+            if (difficulty === "Easy" && speed === 0){
+                sleep(700)
+                dx = 4
+                dy = -4
+                speed = 1
+            }
+            else if (difficulty === "Normal" && speed === 0){
+                sleep(700)
+                dx = 5
+                dy = -5
+                speed = 1
+            }
+            else if (difficulty === "Hard" && speed === 0){
+                sleep(700)
+                dx = 7
+                dy = -7
+                speed = 1
+            }
+        }
+
+        
+        function makeBricksArray() {
+        for (c = 0; c < brickCol; c++) {
+            for (r = 0; r < brickRows; r++) {
+                bricks.push({
+                    x: (c * (brickW + brickPadding)) + brickOffsetLeft,
+                    y: (r * (brickH + brickPadding)) + brickOffsetTop,
+                    status : 1
+                });
+            }
+        }
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(x,y,ballR, 0, Math.PI * 2);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawPong() {
+            ctx.beginPath();
+            ctx.rect(pongX, canvas.height - pongH, pongW, pongH);
+            ctx.fillStyle = 'green';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBricks() {
+            bricks.forEach(function(brick) {
+                if (!brick.status) return;
+                ctx.beginPath();
+                ctx.rect(brick.x, brick.y, brickW, brickH)
+                ctx.fillStyle = 'blue'
+                ctx.fill();
+                ctx.closePath();
+            }) 
+        }
+
+        function collisionDetection() {
+            bricks.forEach(function(b) {
+                if (!b.status) return;
+
+                var inBricksColumn = x > b.x && x < b.x + brickW,
+                    inBricksRow = y > b.y && y < b.y + brickH;
+
+                if (inBricksColumn && inBricksRow) {
+                    dy = -dy;
+                    bricksHit += 1
+                    b.status = 0;
+                }
+            });
+        }
+
+        function sleep(miliseconds) {
+            var currentTime = new Date().getTime();
+
+            while (currentTime + miliseconds >= new Date().getTime()) {
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBricks();
+            drawBall();
+            drawPong();
+            noBricksLeft();
+            setBallSpeed()
+            collisionDetection();
+            brickAmount = brickRows * brickCol
+            
+
+            if (hitSideWall()){
+                dx = -dx;
+            }
+            
+            if (hitTop() || hitPong())
+                dy = -dy;
+
+            if (gameOver()) {
+                document.getElementById("newgame").style["z-index"] = "1";
+                document.getElementById("blackscreen").style["z-index"] = "1";
+                bricksHitAtGameOver += bricksHit
+                document.querySelector(".endgame").style.display = "inline";
+	            document.querySelector(".endgame .text").innerText = 'Score: '+ bricksHitAtGameOver;
+                bricksHit = 0
+                myfunc();
+            }
+            
+
+            var RIGHT_ARROW = 39, LEFT_ARROW = 37,
+                a = 97, d = 100, A = 65, D = 68;
+
+            function hitPong() {
+                return hitBottom() && ballOverPong();
+            }
+            function ballOverPong() {return x > pongX && x < pongX + pongW;}
+            function hitBottom() {
+                return  y + dy > canvas.height - ballR;
+            }
+            function noBricksLeft() {
+                if (bricksHit === brickAmount) {
+                    document.getElementById("newgame").style["z-index"] = "1";
+                    document.getElementById("blackscreen").style["z-index"] = "1";
+                    bricksHitAtGameOver += bricksHit
+                    document.querySelector(".endgame").style.display = "inline";
+	                document.querySelector(".endgame .text").innerText = 'Score: '+ bricksHitAtGameOver;
+                    bricksHit = 0
+                    myfunc();
+                }
+            }
+            function gameOver(){
+                return hitBottom() && !ballOverPong();
+            }
+            function hitSideWall() {return x + dx > canvas.width - ballR || x + dx < ballR;}
+            function hitTop(){return y + dy < ballR}
+            function xOutOfBounds() {return x + dx > canvas.width - ballR || x + dx < ballR;}
+
+
+            function rightPressed(e) {return e.keyCode == RIGHT_ARROW;}
+            function leftPressed(e) {return e.keyCode == LEFT_ARROW;}
+            function aPressed(e) {return e.keyCode == a;}
+            function dPressed(e) {return e.keyCode == d;}
+            function APressed(e) {return e.keyCode == A;}
+            function DPressed(e) {return e.keyCode == D;}
+            function keyDown(e) {
+                rightKey = rightPressed(e)
+                leftKey = leftPressed(e)
+                aKey = aPressed(e) 
+                dKey = dPressed(e)
+                AKey = APressed(e)
+                DKey = DPressed(e)
+            }
+            function keyUp(e){
+                rightKey = rightPressed(e) ? false : rightKey;
+                leftKey = leftPressed(e) ? false : leftKey;
+                aKey = aPressed(e) ? false : aKey
+                dKey = dPressed(e) ? false : dKey
+                AKey = APressed(e) ? false : AKey
+                DKey = DPressed(e) ? false : DKey
+            }
+
+            document.addEventListener("keydown", keyDown, false)
+            document.addEventListener("keyup", keyUp, false)
+
+
+            var maxX = canvas.width - pongW, minX = 0; pongDelta = rightKey ? 12 : leftKey ? -12 : dKey ? 12 : aKey ? -12 : DKey ? 12 : AKey ? -12 : 0;
+
+
+            pongX = pongX + pongDelta;
+            pongX = Math.min(pongX, maxX);
+            pongX = Math.max(pongX, minX);
+
+            x += dx;
+            y += dy;
+        }
+
+
+        
+
+    </script>
+    
+    
+{% endblock %}

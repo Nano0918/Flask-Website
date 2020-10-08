@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 style="text-align:center; color:white; font-family: 'Montserrat', sans-serif;">Welcome to Orlando's Game Site</h1>
+    <h1>
+        <nav style="background-color:black; font-size: 28px; font-family: 'Montserrat', sans-serif;" class="uk-navbar-container uk-margin;" uk-navbar="mode: click">
+            <div class="uk-navbar-left">
+                <ul class="uk-navbar-nav">
+                    <li class="uk-active"><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/">Home</a></li>
+                    <li>
+                        <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Games</a>
+                        
+                        <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-navbar-dropdown-nav">
+                                <li><a href="/TicTacToe">Tic Tac Toe </a></li>
+                                <li><a href="/SnakeGame">Snake</a></li>
+                                <li><a href="/BrickBreakerGame">Brick Breaker</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Tutorials</a>
+                        
+                        <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-navbar-dropdown-nav">
+                                <li><a href="/TicTacToeTutorial">Tic Tac Toe Tutorial</a></li>
+                                <li><a href="/SnakeTutorial">Snake Tutorial</a></li>
+                                <li><a href="/BrickBreakerTutorial">Brick Breaker Tutorial</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Leaderboards</a>
+                        
+                        <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-navbar-dropdown-nav">
+                                <li><a href="/TicTacToeLeaderboard">Tic Tac Toe Leaderboard</a></li>
+                                <li><a href="/SnakeLeaderboard">Snake Leaderboard</a></li>
+                                <li><a href="/BrickBreakerLeaderboard">Brick Breaker Leaderboard</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/AboutWebsite">About Website</a></li>
+                </ul>
+            </div>
+            <div class="uk-navbar-right">
+                <ul class="uk-navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <li ><a style="color: white; font-family: 'Montserrat', sans-serif;">Hello, {{ name }}</a></li>
+                    <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/LogOut">Log Out</a></li>
+                    {% else %}
+                    <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/SignUp">Sign Up</a></li>
+                    <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/LogIn">Log In</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </h1>
+    <div style='padding:50px;'>
+        <div >
+            <h1 style='margin-left: 8%'>Tic Tac Toe</h1>
+            <a href="/TicTacToe"><img style='border-radius:15px;' src="{{url_for('static', filename='TicTacToe.jpg')}}" align="left" width="550" height="600" alt="Tic Tac Toe Game"></a>
+        </div>
+        <div style='margin-top: -70px; margin-left: 35%'>
+            <h1 style='margin-left: 13%'>Snake Game</h1>
+            <a href="/SnakeGame"><img style='border-radius:15px;' src="{{url_for('static', filename='SnakeGame.jpg')}}" align="left" width="550" height="440" alt="Snake Game"></a>
+        </div>
+        <div style='margin-top: -70px; margin-left: 70%'>
+            <h1 style='margin-left: 15%'>Brick Breaker Game</h1>
+            <a href="/BrickBreakerGame"><img style='border-radius:15px;' src="{{url_for('static', filename='BrickBreakerGame.jpg')}}" align="left" width="525" height="400" alt="Brick Breaker Game"></a>
+        </div>
+    </div>
+    
+
+{% endblock %}

@@ -1,0 +1,492 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    td {
+        background-color: white;
+        border: 2px solid #333;
+        height: 202px;
+        width: 275px;
+        text-align: center;
+        vertical-align: middle;
+        font-family: "Comic Sans MS", cursive;
+        font-size: 70px;
+        cursor: pointer;
+    }
+    #btnSubmit {
+            border: 2px;
+            border-radius: 10px;
+            background-color:black;
+            color: white;
+            font-size: 50px;
+            font-weight: 500;
+            height: 60px;
+            width: 170px;
+            text-align: center;
+            margin-top: 10px;
+        }
+    #btnSubmit:hover , #newgame:hover {
+        transition: 0.33s;
+        background-color: rgb(0, 216, 216);
+        color: rgb(255, 22, 148);
+    }
+    #newgame {
+        opacity: 0;
+        border: 2px;
+        border-radius: 5px;
+        position:absolute;
+        background-color:white;
+        color: black;
+        font-size: 20px;
+        font-weight: 500;
+        height: 30px;
+        width: 130px;
+        margin-top: 40px;
+        z-index: 5;
+        left: 50%;
+        margin-left: -95px;
+        margin-top: 664px;
+    }
+    table {
+        opacity:0.5;
+        border-collapse: collapse;
+        position: absolute;
+        left: 25%;
+        margin-left: 30px;
+        margin-top: 40px;
+        border-radius: 10px;
+    }
+    table tr:first-child td {
+        border-top: 0;
+        border-radius: 10px;
+    }
+    table tr:last-child td {
+        border-bottom: 0;
+        border-radius: 10px;
+    }
+    table tr td:first-child {
+        border-left: 0;
+        border-radius: 10px;
+    }
+    
+    table tr td:last-child {
+        border-right: 0;
+        border-radius: 10px;
+    }
+    .endgame {
+        width: 300px;
+        top: 300px;
+        background-color: orange;
+        position: absolute;
+        left: 50%;
+        margin-left: -190px;
+        margin-top: 200px;
+        text-align: center;
+        border-radius: 5px;
+        color: black;
+        font-weight: bold;
+        z-index: 3;
+        font-size: 2em;
+    }
+    #settings {
+        display: none;
+        background: aqua;
+        position: absolute;
+        width: 840px;
+        height: 620px;
+        display: inline-block;
+        left: 25%;
+        margin-left: 30px;
+        margin-top: 38px;
+        font-size:40px;
+        border-radius: 10px;
+        z-index: 2;
+        opacity: 1;
+        text-align: center;
+    }
+    #outline {
+        background: black;
+        position: absolute;
+        width: 900px;
+        height: 690px;
+        margin-top: 10px;
+        left: 25%;
+        z-index: 0;
+        opacity: 1;
+        border-radius: 30px;
+    }
+</style>
+<h1 id='siteheader' style="text-align:center; color:white; font-family: 'Montserrat', sans-serif;">Welcome to Orlando's Game Site</h1>
+
+    <nav style="background-color:black; font-size: 28px; font-family: 'Montserrat', sans-serif;" class="uk-navbar-container uk-margin;" uk-navbar="mode: click">
+        <div class="uk-navbar-left">
+            <ul class="uk-navbar-nav">
+                <li class="uk-active"><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/">Home</a></li>
+                <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Games</a>
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToe">TicTacToe</a></li>
+                            <li><a href="/SnakeGame">Snake Game</a></li>
+                            <li><a href="/BrickBreakerGame">Brick Breaker Game</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Tutorials</a>
+                        
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToeTutorial">Tic Tac Toe Tutorial</a></li>
+                            <li><a href="/SnakeTutorial">Snake Tutorial</a></li>
+                            <li><a href="/BrickBreakerTutorial">Brick Breaker Tutorial</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Leaderboards</a>
+                        
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToeLeaderboard">Tic Tac Toe Leaderboard</a></li>
+                            <li><a href="/SnakeLeaderboard">Snake Leaderboard</a></li>
+                            <li><a href="/BrickBreakerLeaderboard">Brick Breaker Leaderboard</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/AboutWebsite">About Website</a></li>
+            </ul>
+        </div>
+        <div class="uk-navbar-right">
+            <ul class="uk-navbar-nav">
+                {% if current_user.is_authenticated %}
+                <li ><a style="color: white; font-family: 'Montserrat', sans-serif;">Hello, {{ name }}</a></li>
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/LogOut">Log Out</a></li>
+                {% else %}
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/SignUp">Sign Up</a></li>
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/LogIn">Log In</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+
+<div id='settings'>
+    <form>
+      <h3 style='font-size:50px'>Game Settings</h3>
+      <h4 style='font-size:30px' id = '#co-op'>How do you want to play?</h4>
+      <input id = 'one' type="radio" name = 'player' value = 'One' checked>
+        <label for="one"> One Player</label><br>
+      <input id = 'two' type="radio" name = 'player' value = 'Two'>
+        <label for="two"> Two Player</label>      
+      <h4 style='font-size:30px' id = '#instruction3'>AI Difficulty:</h4>
+      <input id = 'easy' type="radio" name = 'diff'  value = 'Easy' checked>
+      <label for="easy">Easy</label><br>
+      <input id = 'hard' type="radio" name = 'diff' value = 'Hard'>
+      <label for="hard">Hard</label><br>
+      <input id = 'btnSubmit' type="button" value = 'Start'>
+    </form>
+
+    <div id = 'welcomeScreen'>
+        <h3 id = 'welcome'></h3>
+    </div>  
+</div>
+
+<table id="table">
+    <tr>
+        <td class="cell" id="0"></td>
+        <td class="cell" id="1"></td>
+        <td class="cell" id="2"></td>
+    </tr>
+    <tr>
+        <td class="cell" id="3"></td>
+        <td class="cell" id="4"></td>
+        <td class="cell" id="5"></td>
+    </tr>
+    <tr>
+        <td class="cell" id="6"></td>
+        <td class="cell" id="7"></td>
+        <td class="cell" id="8"></td>
+    </tr>
+    <div id='outline'></div>
+    <div class="endgame">
+        <div class="text"></div>
+    </div>
+</table>
+
+
+<form action="/UpdateTicTacToeScore" method="POST">
+    <input style='opacity:0; z-index:-1;' type="number" value='{{ currentUserTicTacToeScore.score }}'  id="demo" name="TicTacToeFormScore">
+    <button id='newgame' type="submit" onClick="newGame()">New Game</button>
+</form>
+
+<param type="number" value='{{ currentUserTicTacToeScore.score }}' id="oldValue">
+    
+<script>
+var originalBoard, playerType, difficulty;
+var currentTurn = 'O';
+let moves;
+var winner;
+const firstPlayer = 'O';
+const secondPlayer = 'X';
+const hardAi = 'X';
+const easyAi = 'X';
+const winCombos = [
+	[0, 1, 2],
+	[3, 4, 5],
+	[6, 7, 8],
+	[0, 3, 6],
+	[1, 4, 7],
+	[2, 5, 8],
+	[0, 4, 8],
+	[6, 4, 2]
+]
+
+
+function myfunc() {
+    let old_value = document.getElementById('oldValue').value
+    let new_value = Number(old_value) + 1
+    document.getElementById('demo').value = new_value
+}
+
+
+const cells = document.querySelectorAll('.cell');
+
+document.getElementById("btnSubmit").onclick = function(){
+    document.getElementById("table").style["opacity"] = "1"; 
+    getData();
+    startGame();
+}
+
+
+function getData() {
+    playerType = document.querySelector('input[name=player]:checked').value;
+    difficulty = document.querySelector('input[name=diff]:checked').value;
+    document.getElementById("settings").style["opacity"] = "0";
+    document.getElementById("settings").style['z-index'] = '-1';
+    document.querySelector("#newgame").style["opacity"] = "1";
+}
+
+function newGame() {
+    document.getElementById("settings").style["opacity"] = "1";
+    document.getElementById("settings").style['z-index'] = '1';
+    document.querySelector(".endgame").style.display = "none";
+    document.querySelector("#newgame").style["opacity"] = "0";
+}
+
+function startGame() {
+    moves = 0;
+    winner = false;
+    currentTurn = firstPlayer;
+    document.querySelector(".endgame").style.display = "none";
+	originalBoard = Array.from(Array(9).keys());
+	for (var i = 0; i < cells.length; i++) {
+        cells[i].innerText = '';
+		cells[i].style.removeProperty('background-color');
+		cells[i].addEventListener('click', turnClick, false);
+    }
+}
+
+function turnClick(square) {
+    if (typeof originalBoard[square.target.id] == 'number') {
+        if (playerType === 'One' && difficulty === 'Easy'){
+            turn(square.target.id, firstPlayer)
+            if (!checkWin(originalBoard, firstPlayer) && !checkTieOnePlayer()){
+                turn(randomSpot(), easyAi);
+                checkTieOnePlayer()
+            }
+	    }
+        if (playerType === 'One' && difficulty === 'Hard'){
+            turn(square.target.id, firstPlayer);
+            if (!checkWin(originalBoard, firstPlayer) && !checkTieOnePlayer()){
+                turn(bestSpot(), hardAi);
+                checkTieOnePlayer()
+            }
+        }
+        if (playerType === 'Two'){
+            if (currentTurn === firstPlayer){
+                if (!checkWin(originalBoard, firstPlayer) && !checkTieTwoPlayers())
+                turn(square.target.id, firstPlayer);
+                checkTieTwoPlayers();
+            }
+            else if (currentTurn === secondPlayer) {
+                if (!checkWin(originalBoard, secondPlayer) && !checkTieTwoPlayers())
+                turn(square.target.id, secondPlayer);
+                checkTieTwoPlayers();
+            }
+            swapTurns();
+        }
+    }
+}
+
+function turn(squareId, player) {
+    originalBoard[squareId] = player;
+	document.getElementById(squareId).innerText = player;
+	let gameWon = checkWin(originalBoard, player);
+    if (gameWon) gameOver(gameWon);
+}
+
+function swapTurns() {
+    if(currentTurn === secondPlayer) {
+        currentTurn = firstPlayer;
+	} else {
+        currentTurn = secondPlayer;
+	}
+	return currentTurn;
+}
+
+function checkWin(board, player) {
+    let plays = board.reduce((a, e, i) =>
+    (e === player) ? a.concat(i) : a, []);
+	let gameWon = null;
+	for (let [index, win] of winCombos.entries()) {
+        if (win.every(elem => plays.indexOf(elem) > -1)) {
+            gameWon = {index: index, player: player};
+            winner = true;
+			break;
+        }
+    }
+	return gameWon;
+}
+
+function checkTieTwoPlayers() {
+    if (!winner === true) {
+        if (emptySquares().length == 0) {
+            for (var i = 0; i < cells.length; i++) {
+                cells[i].style.backgroundColor = "green";
+			    cells[i].removeEventListener('click', turnClick, false);
+		    }
+		    declareWinner("Tie Game!")
+            return true;
+        }
+    }
+	return false;
+}
+
+function checkTieOnePlayer() {
+    if (emptySquares().length == 0) {
+        for (var i = 0; i < cells.length; i++) {
+            cells[i].style.backgroundColor = "green";
+            cells[i].removeEventListener('click', turnClick, false);
+        }
+        declareWinner("Tie Game!")
+        return true;
+    }
+	return false;
+}
+
+function gameOver(gameWon) {
+    for (let index of winCombos[gameWon.index]) {
+        if (playerType === 'One'){
+            document.getElementById(index).style.backgroundColor =
+            gameWon.player == firstPlayer ? "cyan" : "red";
+            declareWinner(gameWon.player == firstPlayer ? "You Win!" : "You Lose!");
+            if (gameWon.player === firstPlayer)
+                myfunc()
+        }
+        if (playerType === 'Two'){
+            if (gameWon.player === firstPlayer){
+                document.getElementById(index).style.backgroundColor = "cyan";
+            }
+            if (gameWon.player === secondPlayer){
+                document.getElementById(index).style.backgroundColor = "yellow";
+            }
+            declareWinner(gameWon.player == firstPlayer ? "Player 1 Wins" : "Player 2 Wins");
+        }
+	}
+	for (var i = 0; i < cells.length; i++) {
+        cells[i].removeEventListener('click', turnClick, false);
+    }
+}
+
+function declareWinner(who) {
+    if (playerType === 'One'){
+        document.querySelector(".endgame").style.display = "inline";
+	    document.querySelector(".endgame .text").innerText = who;
+    }
+    if (playerType === 'Two'){
+        document.querySelector(".endgame").style.display = "inline";
+	    document.querySelector(".endgame .text").innerText = who;
+    }
+}
+
+function emptySquares() {
+    return originalBoard.filter(s => typeof s == 'number');
+}
+
+function dumbAI(newBoard) {
+    var availiableSpots = emptySquares(newBoard);
+
+    var moves = [];
+    for (let i = 0; i < availiableSpots.length; i ++) {
+        moves[i] = availiableSpots[i];       
+    }
+    randomMove = moves[Math.floor(Math.random() * moves.length)];
+    if (moves[randomMove] === undefined){
+        moves[randomMove] = moves[0];
+    }
+    return moves[randomMove];
+}
+
+
+function randomSpot(){
+    return dumbAI(originalBoard)
+}
+
+function bestSpot(){
+    return minimax(originalBoard, hardAi).index;
+}
+
+function minimax(newBoard, player) {
+    var availiableSpots = emptySquares(newBoard);
+    
+    if (checkWin(newBoard, firstPlayer)) {
+        return {score: -10};
+    } else if (checkWin(newBoard, hardAi)) {
+        return {score: 10};
+    } else if (availiableSpots.length === 0) {
+        return {score: 0};
+    }
+    
+    var moves = [];
+    for (let i = 0; i < availiableSpots.length; i ++) {
+        var move = {};
+        move.index = newBoard[availiableSpots[i]];
+        newBoard[availiableSpots[i]] = player;
+        
+        if (player === hardAi)
+            move.score = minimax(newBoard, firstPlayer).score;
+        else
+            move.score =  minimax(newBoard, hardAi).score;
+        newBoard[availiableSpots[i]] = move.index;
+    if ((player === hardAi && move.score === 10) || (player === firstPlayer && move.score === -10))
+      return move;
+    else 
+      moves.push(move);
+  }
+  
+  let bestMove, bestScore;
+  if (player === hardAi) {
+    bestScore = -1000;
+    for(let i = 0; i < moves.length; i++) {
+      if (moves[i].score > bestScore) {
+        bestScore = moves[i].score;
+        bestMove = i;
+      }
+    }
+  } else {
+      bestScore = 1000;
+      for(let i = 0; i < moves.length; i++) {
+      if (moves[i].score < bestScore) {
+        bestScore = moves[i].score;
+        bestMove = i;
+      }
+    }
+  }
+  return moves[bestMove];
+}
+
+</script>
+
+{% endblock %}

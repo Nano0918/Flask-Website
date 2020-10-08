@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1 style="text-align:center; color:white; font-family: 'Balsamiq Sans', cursive;">Welcome to Orlando's Game Site</h1>
+    <h1>
+        <nav style="background-color:black; font-size: 28px; font-family: 'Balsamiq Sans', cursive;" class="uk-navbar-container uk-margin;" uk-navbar="mode: click">
+            <div class="uk-navbar-left">
+                <ul class="uk-navbar-nav">
+                    <li class="uk-active"><a style="color: white;" href="/">Home</a></li>
+                    <li>
+                        <a style="color: white;" href="#">Games</a>
+                        <div style="color: white;" class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-navbar-dropdown-nav">
+                                <li><a href="/TicTacToe">TicTacToe</a></li>
+                                <li><a href="/SnakeGame">Snake Game</a></li>
+                                <li><a href="/BrickBreakerGame">Brick Breaker Game</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Tutorials</a>
+                        
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToeTutorial">Tic Tac Toe Tutorial</a></li>
+                            <li><a href="/SnakeTutorial">Snake Tutorial</a></li>
+                            <li><a href="/BrickBreakerTutorial">Brick Breaker Tutorial</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Leaderboards</a>
+                        
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToeLeaderboard">Tic Tac Toe Leaderboard</a></li>
+                            <li><a href="/SnakeLeaderboard">Snake Leaderboard</a></li>
+                            <li><a href="/BrickBreakerLeaderboard">Brick Breaker Leaderboard</a></li>
+                        </ul>
+                    </div>
+                </li>
+                    <li><a style="color: white;" href="/AboutWebsite">About Website</a></li>
+                </ul>
+            </div>
+            <div class="uk-navbar-right">
+                <ul class="uk-navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <li ><a style="color: white; font-family: 'Montserrat', sans-serif;">Hello, {{ name }}</a></li>
+                    <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/LogOut">Log Out</a></li>
+                    {% else %}
+                    <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/SignUp">Sign Up</a></li>
+                    <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/LogIn">Log In</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </h1>
+
+    <h1 style='text-align:center; color:white;'>Snake Leaderboard</h1>
+    <h3 style='text-align:center; color:white;'> (Score is based off how big the snake was before losing)</h3>
+    <div style='background-color:teal; height:500px; width:25%;  margin:0 auto;'>
+        <ol style='height:500px; overflow:hidden; overflow-y:scroll; font-size:30px; margin:0 auto; color:white; margin-left:100px;'>
+            {% for user in leaderboard %}
+                {% if userID == user.id %}
+                    <li>You - {{ user.score }} </li>
+                {% else %}
+                    <li>Other Player - {{ user.score }}</li>
+                {% endif %}
+            {% endfor %}
+        </ol>
+    </div>
+
+{% endblock %}

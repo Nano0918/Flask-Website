@@ -1,0 +1,86 @@
+  
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+
+<link rel="stylesheet" href="{{url_for('.static', filename='signin.css')}}">
+
+{% endblock %}
+
+{% block content %}
+<h1 style="text-align:center; color:white; font-family: 'Montserrat', sans-serif;">Welcome to Orlando's Game Site</h1>
+    
+        
+    <h1>
+        <nav style="background-color:black;" class="uk-navbar-container uk-margin;" uk-navbar="mode: click">
+            <div class="uk-navbar-left">
+                <ul class="uk-navbar-nav">
+                    <li class="uk-active"><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/">Home</a></li>
+                    <li>
+                        <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Games</a>
+                        <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-navbar-dropdown-nav">
+                                <li><a href="/TicTacToe">TicTacToe</a></li>
+                                <li><a href="/SnakeGame">Snake Game</a></li>
+                                <li><a href="/BrickBreakerGame">Brick Breaker Game</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Tutorials</a>
+                        
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToeTutorial">Tic Tac Toe Tutorial</a></li>
+                            <li><a href="/SnakeTutorial">Snake Tutorial</a></li>
+                            <li><a href="/BrickBreakerTutorial">Brick Breaker Tutorial</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Leaderboards</a>
+                        
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToeLeaderboard">Tic Tac Toe Leaderboard</a></li>
+                            <li><a href="/SnakeLeaderboard">Snake Leaderboard</a></li>
+                            <li><a href="/BrickBreakerLeaderboard">Brick Breaker Leaderboard</a></li>
+                        </ul>
+                    </div>
+                </li>
+                    <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/AboutWebsite">About Website</a></li>
+                </ul>
+            </div>
+            <div class="uk-navbar-right">
+                <ul class="uk-navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/LogOut">Log Out</a></li>
+                    {% else %}
+                    <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/SignUp">Sign Up</a></li>
+                    <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/LogIn">Log In</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </h1>
+    <div class="container">
+
+      <form method="POST" action="/SignUp">
+        <div style="text-align:center; color:white; font-family: 'Montserrat', sans-serif; font-size:25px;">
+          <h2 style='font-size:40px; color:white; font-weight: bold;'>Sign Up</h2>
+              {{ form.hidden_tag() }}
+              {{ wtf.form_field(form.username) }}
+              {{ wtf.form_field(form.password) }}
+              {{ wtf.form_field(form.first_name) }}
+          <button style='width:200px;' type="submit">Create Account</button>
+        </div>
+      </form>
+
+    </div>
+{% endblock %}

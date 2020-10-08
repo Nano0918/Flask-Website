@@ -1,0 +1,501 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+        #game-background{
+            height: 78vh;
+            width: 100vmin;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            margin-left: 25%;
+            margin-top: -10px;
+        }
+        #game-board {
+            background-color: green;
+            width: 80vmin;
+            height: 70vmin;
+            display: grid;
+            position:absolute;
+            grid-template-rows: repeat(26, 1fr);
+            grid-template-columns: repeat(26, 1fr);
+            border-radius: 10px;
+        }
+
+        .snake {
+            background-color: hsl(200, 100%, 50%);
+            border:.25vmin solid black;
+        }
+        .food {
+            background-color: red;
+            border:.25vmin solid black;
+        }
+        #btnSubmit {
+            border: 2px;
+            border-radius: 10px;
+            background-color:white;
+            color: black;
+            font-size: 50px;
+            height: 60px;
+            width: 170px;
+            text-align: center;
+            margin-top:-400px;
+        }
+    #btnSubmit:hover , #restartGame:hover, #newgame:hover {
+        transition: 0.33s;
+        background-color: rgb(0, 216, 216);
+        color: rgb(255, 22, 148);
+    }
+    #settings{
+        background-color: lightblue;
+        z-index: 1;
+        position:absolute;
+        width: 80vmin;
+        height: 70vmin;
+        font-size:65px;
+        font-weight: bold;
+        color: rgb(14, 3, 163);
+        border-radius: 10px;
+        z-index: 1;
+        text-align: center;
+    }
+    #restartGame{
+        border: 2px;
+        border-radius: 10px;
+        background-color:white;
+        width: 100px;
+        height:30px;
+        color: black;
+        font-size: 20px;
+        position: absolute;
+        text-align: center;
+        margin-top: 60vh;
+        margin-left: 38%;
+        z-index: -1;
+    }
+    .radio {
+        width: 1.5em;
+        height: 1.5em;
+    }
+    </style>
+<h1 id='siteheader' style="text-align:center; color:white; font-family: 'Montserrat', sans-serif;">Welcome to Orlando's Game Site</h1>
+
+    <nav style="background-color:black; font-size: 28px; font-family: 'Montserrat', sans-serif;" class="uk-navbar-container uk-margin;" uk-navbar="mode: click">
+        <div class="uk-navbar-left">
+            <ul class="uk-navbar-nav">
+                <li class="uk-active"><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/">Home</a></li>
+                <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Games</a>
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToe">TicTacToe</a></li>
+                            <li><a href="/SnakeGame">Snake Game</a></li>
+                            <li><a href="/BrickBreakerGame">Brick Breaker Game</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Tutorials</a>
+                        
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToeTutorial">Tic Tac Toe Tutorial</a></li>
+                            <li><a href="/SnakeTutorial">Snake Tutorial</a></li>
+                            <li><a href="/BrickBreakerTutorial">Brick Breaker Tutorial</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a style="color: white; font-family: 'Montserrat', sans-serif;" href="#">Leaderboards</a>
+                        
+                    <div style="color: white; font-family: 'Montserrat', sans-serif;" class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="/TicTacToeLeaderboard">Tic Tac Toe Leaderboard</a></li>
+                            <li><a href="/SnakeLeaderboard">Snake Leaderboard</a></li>
+                            <li><a href="/BrickBreakerLeaderboard">Brick Breaker Leaderboard</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/AboutWebsite">About Website</a></li>
+            </ul>
+        </div>
+        <div class="uk-navbar-right">
+            <ul class="uk-navbar-nav">
+                {% if current_user.is_authenticated %}
+                <li ><a style="color: white; font-family: 'Montserrat', sans-serif;">Hello, {{ name }}</a></li>
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/LogOut">Log Out</a></li>
+                {% else %}
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/SignUp">Sign Up</a></li>
+                <li><a style="color: white; font-family: 'Montserrat', sans-serif;" href="/LogIn">Log In</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    <form id='myForm' action="/UpdateSnakeScore" method="POST">
+        <input style='opacity:0; z-index:-1;' type="number" value='{{ currentUserSnakeScore.score}}'  id="demo" name="SnakeFormScore">
+        <input id='restartGame' type="submit" onClick='myfunc()' value"Restart"></input>
+    </form>
+    
+    <param type="number" value='{{ currentUserSnakeScore.score }}' id="oldValue">
+    <div id='game-background'>
+        <div id='settings'>
+            <form >
+                <h3 style='font-weight:bold; font-size:70px; color: black;'>Snake Game<br>Difficulty</h3>
+                <input id = 'easy' type="radio" name = 'diff' value = 'Easy' class='radio' checked>
+                  <label for="easy">Easy</label><br>
+                <input id = 'normal' type="radio" name = 'diff' value = 'Normal' class='radio'>
+                  <label for="normal">Normal</label><br>
+                <input id = 'hard' type="radio" name = 'diff'  value = 'Hard' class='radio'>
+                    <label for="hard">Hard</label><br>
+                <input id = 'btnSubmit' type="button" value = 'Start'>
+              </form>
+        </div>
+        <div id='game-board'></div>
+    </div>
+    
+    <div style='width: 300px;
+                top: 300px;
+                background-color: orange;
+                position: absolute;
+                left: 50%;
+                margin-left: -155px;
+                margin-top: 200px;
+                text-align: center;
+                border-radius: 5px;
+                color: black;
+                font-weight: bold;
+                z-index: 3;
+                font-size: 2em;' class='endgame'>
+            <div class="text"></div>
+    </div>
+    
+
+    <script defer>
+        let lastRenderTime = 0
+        let gameOver = false
+        let restart = false
+        //let snakeBody
+        const gameBoard = document.getElementById('game-board')
+        let GRID_SIZE = 0
+        var difficulty
+        let EXPANSION_RATE = 0
+        let SNAKE_SPEED = 0
+        let snakeLength = 1
+
+
+       
+        function myfunc() {
+            let old_value = document.getElementById('oldValue').value
+            let value = Number(old_value)
+            if (snakeLength > value)
+                document.getElementById('demo').value = snakeLength
+            else
+                document.getElementById('demo').value = value
+        }
+        
+        // GAME
+        document.getElementById("btnSubmit").onclick = function(){
+            if (restart){
+                inputDirection = {x: 0, y: 0}
+                gameOver = false
+            }
+            document.querySelector(".endgame").style.display = "none";
+            difficulty = document.querySelector('input[name=diff]:checked').value;
+            document.getElementById("settings").style["z-index"] = "-1";
+            
+            expansionRateFromGameType()
+            snakeSpeedFromGameType()
+            gridSizeFromGameType()
+            window.requestAnimationFrame(main);
+        }
+
+        function expansionRateFromGameType() {
+            if (difficulty === "Easy"){
+                EXPANSION_RATE = 1
+            }
+
+            if (difficulty === "Normal"){
+                EXPANSION_RATE = 2
+            }
+
+            if (difficulty === "Hard"){
+                EXPANSION_RATE = 3
+            }
+            return EXPANSION_RATE
+        }
+        
+        
+        function snakeSpeedFromGameType() {
+            if (difficulty === "Easy"){
+                SNAKE_SPEED = 0.7
+            }
+            else if (difficulty === "Normal"){
+                SNAKE_SPEED = 1.3
+            }
+            else if (difficulty === "Hard"){
+                SNAKE_SPEED = 1.7
+            }
+            return SNAKE_SPEED
+        }
+
+
+        function gridSizeFromGameType() {
+            if (difficulty === "Easy"){
+                GRID_SIZE = 26
+                document.getElementById("game-board").style["grid-template-rows"] = "repeat(26, 1fr)";
+                document.getElementById("game-board").style["grid-template-columns"] = "repeat(26, 1fr)";
+            }
+            else if (difficulty === "Normal"){
+                GRID_SIZE = 30
+                document.getElementById("game-board").style["grid-template-rows"] = "repeat(30, 1fr)";
+                document.getElementById("game-board").style["grid-template-columns"] = "repeat(30, 1fr)";
+            }
+            else if (difficulty === "Hard"){
+                GRID_SIZE = 34
+                document.getElementById("game-board").style["grid-template-rows"] = "repeat(34, 1fr)";
+                document.getElementById("game-board").style["grid-template-columns"] = "repeat(34, 1fr)";
+            }
+            return GRID_SIZE
+        }
+
+
+        function main(currentTime){
+            window.requestAnimationFrame(main)
+            const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000
+            if (secondsSinceLastRender < 0.1 / SNAKE_SPEED) return
+
+
+            lastRenderTime = currentTime;
+            
+            updateSnake()
+            updateFood()
+            checkDeath()
+            drawBoard()
+        }
+
+        function resetGame(){
+            if (gameOver){
+                snakeBody = [ { x : 11, y: 11} ]
+                food = getRandomFoodPosition()
+                snakeLength = 1
+                document.getElementById("settings").style["z-index"] = "1";
+                document.getElementById("restartGame").style["z-index"] = "-1";
+                restart = true
+            }
+        }
+
+        document.getElementById("restartGame").onclick = function(){
+            resetGame()
+            document.getElementById("settings").style["z-index"] = "1";
+            document.getElementById("restartGame").style["z-index"] = "-1";
+        }
+
+        function drawBoard(){
+            gameBoard.innerHTML =''
+            drawSnake(gameBoard)
+            drawFood(gameBoard)
+        }
+
+        function checkDeath() {
+            if (outsideGrid(getSnakeHead()) || snakeIntersection()) {
+                document.querySelector(".endgame").style.display = "inline";
+	            document.querySelector(".endgame .text").innerText = 'Score: '+ snakeLength;
+	            document.getElementById("game-board").style["z-index"] = "-1";
+	            document.getElementById("restartGame").style["z-index"] = "1";
+                myfunc();
+                gameOver = true
+                
+            }
+            else
+                gameover = false
+        }
+
+
+
+        // SNAKE
+        let snakeBody = [ { x : 11, y: 11} ]
+        let newSegments = 0
+
+        function updateSnake(){
+            addSegments()
+
+            const inputDirectionCurrent = getInputDirection()
+            for (let i = snakeBody.length - 2; i >= 0; i--){
+                snakeBody[i + 1] = { ...snakeBody[i] }
+            }
+            snakeBody[0].x += inputDirectionCurrent.x
+            snakeBody[0].y += inputDirectionCurrent.y
+        }
+
+
+        function drawSnake(gameBoard){
+            snakeBody.forEach(segment => {
+                const snakeElement = document.createElement("div");
+                snakeElement.style.gridRowStart = segment.y
+                snakeElement.style.gridColumnStart = segment.x
+                snakeElement.classList.add('snake')
+                gameBoard.appendChild(snakeElement)
+
+            })
+
+        }
+
+        function expandSnake(amount) {
+            newSegments += amount
+            snakeLength += amount
+        }
+
+        function onSnake(position, { ignoreHead = false} = {}) {
+            return snakeBody.some((segment, index) => {
+                if (ignoreHead && index === 0)
+                    return false
+                return equalPositions(segment, position)
+            })
+        }
+
+        function equalPositions(pos1, pos2) {
+            return pos1.x === pos2.x && pos1.y === pos2.y
+        }
+
+        function addSegments() {
+            for ( let i = 0; i < newSegments; i++) {
+                snakeBody.push({ ...snakeBody[snakeBody.length - 1] })
+            }
+            newSegments = 0
+        }
+
+        function getSnakeHead() {
+            return snakeBody[0]
+        }
+
+        function snakeIntersection() {
+            return onSnake(snakeBody[0], {ignoreHead: true})
+        }
+
+        // FOOD
+        let food = { x : 9, y: 5}
+
+
+        function updateFood() {
+            if (onSnake(food)){
+                expandSnake(EXPANSION_RATE)
+                food = getRandomFoodPosition()
+                foodEaten += 1
+            }
+        }
+
+        function drawFood(gameBoard){
+            const foodElement = document.createElement("div")
+            randomGridPosition() 
+            foodElement.style.gridRowStart = food.y
+            foodElement.style.gridColumnStart = food.x
+            foodElement.classList.add('food')
+            gameBoard.appendChild(foodElement)
+        }
+
+
+        function getRandomFoodPosition() {
+            let newFoodPosition
+            while (newFoodPosition == null || onSnake(newFoodPosition)) {
+                newFoodPosition = randomGridPosition()
+            }
+            return newFoodPosition
+        }
+
+        // GRID
+        function randomGridPosition() {
+            return {
+                x: Math.floor(Math.random() * GRID_SIZE) + 1,
+                y: Math.floor(Math.random() * GRID_SIZE) + 1
+            }
+        }
+
+        function outsideGrid(position) {
+            return (
+                position.x < 1 || position.x > GRID_SIZE ||
+                position.y < 1 || position.y > GRID_SIZE
+            )
+        }
+
+        // INPUT
+        let inputDirection = { x : 0, y : 0 }
+        let lastInputDirection = { x : 0, y : 0 }
+
+
+
+        function getInputDirection() {
+            lastInputDirection = inputDirection
+
+            return inputDirection
+        }
+
+        window.addEventListener('keydown', e => {
+            switch (e.key) {
+                case 'ArrowUp':
+                    if(lastInputDirection.y != 0)
+                        break
+                    inputDirection = { x : 0, y : -1 }
+                    break
+                case 'ArrowDown':
+                    if(lastInputDirection.y != 0)
+                        break
+                    inputDirection = { x : 0, y : 1 }
+                    break
+                case 'ArrowLeft':
+                    if(lastInputDirection.x != 0)
+                        break
+                    inputDirection = { x : -1, y : 0 }
+                    break
+                case 'ArrowRight':
+                    if(lastInputDirection.x != 0)
+                        break
+                    inputDirection = { x : 1, y : 0 }
+                    break
+                case 'W':
+                    if(lastInputDirection.y != 0)
+                        break
+                    inputDirection = { x : 0, y : -1 }
+                    break
+                case 'S':
+                    if(lastInputDirection.y != 0)
+                        break
+                    inputDirection = { x : 0, y : 1 }
+                    break
+                case 'A':
+                    if(lastInputDirection.x != 0)
+                        break
+                    inputDirection = { x : -1, y : 0 }
+                    break
+                case 'D':
+                    if(lastInputDirection.x != 0)
+                        break
+                    inputDirection = { x : 1, y : 0 }
+                    break
+                case 'w':
+                    if(lastInputDirection.y != 0)
+                        break
+                    inputDirection = { x : 0, y : -1 }
+                    break
+                case 's':
+                    if(lastInputDirection.y != 0)
+                        break
+                    inputDirection = { x : 0, y : 1 }
+                    break
+                case 'a':
+                    if(lastInputDirection.x != 0)
+                        break
+                    inputDirection = { x : -1, y : 0 }
+                    break
+                case 'd':
+                    if(lastInputDirection.x != 0)
+                        break
+                    inputDirection = { x : 1, y : 0 }
+                    break
+            }
+        })
+
+
+    </script>
+
+{% endblock %}
